@@ -13,7 +13,7 @@ class CreepTypes {
 	public readonly ForgedSpirit: Menu.Toggle
 
 	constructor(menu: Menu.Node) {
-		this.Lane = menu.AddToggle("Lines", true)
+		this.Lane = menu.AddToggle("Lines", false)
 		this.Lane.IsHidden = true
 
 		this.Neutral = menu.AddToggle("Neutrals", true)
