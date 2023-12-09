@@ -34,7 +34,7 @@ export class MenuBuilding {
 		// outposts not supported
 		this.Outpost = this.tree.AddToggle("Outposts", true)
 		this.Outpost.IsHidden = true
-		this.Barrack = this.tree.AddToggle("Barracks", true)
+		this.Barrack = this.tree.AddToggle("Barraks", true)
 		this.Barrack.IsHidden = true
 		this.UnderlordPortal = this.tree.AddToggle("Underlord portal", true)
 		this.UnderlordPortal.IsHidden = true
@@ -59,15 +59,15 @@ export class MenuBuilding {
 	}
 
 	public ResetSettings() {
-		this.State.value = true
-		this.AllState.value = true
-		this.GlowState.value = true
-		this.Fort.value = true
-		this.Tower.value = true
-		this.Filler.value = true
-		this.Watcher.value = true
-		this.ParticleState.value = true
-		this.UnderlordPortal.value = true
+		this.Fort.value = this.Fort.defaultValue
+		this.Tower.value = this.Tower.defaultValue
+		this.Filler.value = this.Filler.defaultValue
+		this.Watcher.value = this.Watcher.defaultValue
+		this.State.value = this.State.defaultValue
+		this.AllState.value = this.AllState.defaultValue
+		this.GlowState.value = this.GlowState.defaultValue
+		this.ParticleState.value = this.ParticleState.defaultValue
+		this.UnderlordPortal.value = this.UnderlordPortal.defaultValue
 		this.HideUnhide()
 	}
 

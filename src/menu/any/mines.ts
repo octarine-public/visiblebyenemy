@@ -15,7 +15,7 @@ export class MenuMine {
 		menu.SortNodes = false
 		this.State = menu.AddToggle("State", true)
 		this.GlowState = menu.AddToggle("Glow effect", true)
-		this.ParticleState = menu.AddToggle("Particle effect", false)
+		this.ParticleState = menu.AddToggle("Particle effect", true)
 	}
 
 	public OnChanged(callback: () => void) {
@@ -25,8 +25,8 @@ export class MenuMine {
 	}
 
 	public ResetSettings() {
-		this.State.value = true
-		this.GlowState.value = true
-		this.ParticleState.value = false
+		this.State.value = this.State.defaultValue
+		this.GlowState.value = this.GlowState.defaultValue
+		this.ParticleState.value = this.ParticleState.defaultValue
 	}
 }

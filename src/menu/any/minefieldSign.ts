@@ -1,12 +1,17 @@
 import { ImageData, Menu } from "github.com/octarine-public/wrapper/index"
 
-export class MenuWard {
+export class MenuMinefieldSign {
 	public readonly State: Menu.Toggle
 	public readonly GlowState: Menu.Toggle
 	public readonly ParticleState: Menu.Toggle
 
 	constructor(node: Menu.Node) {
-		const menu = node.AddNode("Wards", ImageData.Paths.Icons.icon_ward)
+		const menu = node.AddNode(
+			"Minefield sign",
+			ImageData.GetSpellTexture("techies_minefield_sign"),
+			"",
+			0
+		)
 		menu.SortNodes = false
 		this.State = menu.AddToggle("State", true)
 		this.GlowState = menu.AddToggle("Glow effect", true)

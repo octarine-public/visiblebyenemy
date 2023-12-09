@@ -2,19 +2,16 @@ import "./translate"
 
 import {
 	Announcer,
-	BaseBlocker,
 	Building,
-	ClinkzSkeletonArmy,
+	Courier,
 	Creep,
-	ElderTitanAncestralSpirit,
 	Entity,
 	EventsSDK,
-	EyesInTheForest,
 	Fort,
 	Fountain,
-	IngisFatuus,
-	LichIceSpire,
 	MangoTree,
+	Miniboss,
+	npc_dota_base_blocker,
 	npc_dota_beastmaster_boar,
 	npc_dota_beastmaster_hawk,
 	npc_dota_brewmaster_earth,
@@ -22,23 +19,31 @@ import {
 	npc_dota_brewmaster_storm,
 	npc_dota_brewmaster_void,
 	npc_dota_broodmother_spiderling,
+	npc_dota_clinkz_skeleton_archer,
+	npc_dota_elder_titan_ancestral_spirit,
+	npc_dota_ignis_fatuus,
 	npc_dota_invoker_forged_spirit,
+	npc_dota_lich_ice_spire,
+	npc_dota_shadowshaman_serpentward,
+	npc_dota_techies_minefield_sign,
+	npc_dota_templar_assassin_psionic_trap,
+	npc_dota_treant_eyes,
+	npc_dota_unit_undying_tombstone,
+	npc_dota_venomancer_plagueward,
 	npc_dota_visage_familiar,
+	npc_dota_wisp_spirit,
+	npc_dota_zeus_cloud,
 	ParticleAttachment,
 	ParticlesSDK,
-	ShamanSerpentWard,
 	SpiritBear,
 	Team,
 	TechiesMines,
-	TemplarPsionicTrap,
 	Thinker,
 	TwinGate,
 	UnderlordPortal,
-	UndyingTombstone,
 	Unit,
-	VenomancerPlagueWard,
-	WispSpirit,
-	ZeusCloud
+	WardObserver,
+	WardTrueSight
 } from "github.com/octarine-public/wrapper/index"
 
 import { MenuManager } from "./menu/index"
@@ -50,6 +55,14 @@ const bootstrap = new (class CVisibleByEnemy {
 
 	constructor() {
 		this.menu.OnChanged(() => this.OnChangedMenu())
+	}
+
+	protected get IsCourierState() {
+		return this.menu.Courier.State.value
+	}
+
+	protected get IsWardState() {
+		return this.menu.Ward.State.value
 	}
 
 	private get state() {
@@ -98,7 +111,7 @@ const bootstrap = new (class CVisibleByEnemy {
 		if (
 			!this.state ||
 			!unit.IsAlive ||
-			(unit instanceof WispSpirit && unit.IsNeutral) ||
+			(unit instanceof npc_dota_wisp_spirit && unit.IsNeutral) ||
 			(unit instanceof SpiritBear && !unit.ShouldRespawn)
 		) {
 			return false
@@ -106,24 +119,35 @@ const bootstrap = new (class CVisibleByEnemy {
 		if (unit.IsEnemy() && unit.Team !== Team.Neutral) {
 			return false
 		}
-		return (
-			this.IsHero(unit) ||
-			this.IsCreep(unit) ||
-			this.IsBuilding(unit) ||
-			this.IsOtherUnit(unit)
-		)
+		if (unit.IsHero) {
+			return this.IsHero(unit)
+		}
+		if (unit.IsCreep) {
+			return this.IsCreep(unit)
+		}
+		if (unit.IsBuilding) {
+			return this.IsBuilding(unit)
+		}
+		if (unit instanceof Courier) {
+			return this.IsCourierState
+		}
+		if (unit instanceof WardObserver || unit instanceof WardTrueSight) {
+			return this.IsWardState
+		}
+		return this.IsOtherUnit(unit)
 	}
 
 	protected UpdateUnits(unit: Unit) {
 		if (!unit.ClassName.length || unit instanceof Fountain) {
 			return
 		}
-		if (unit instanceof Announcer || unit instanceof BaseBlocker) {
+		if (unit instanceof Announcer || unit instanceof npc_dota_base_blocker) {
 			return
 		}
+
 		const menu = this.menu
 		const effectType = menu.EffectType
-		const isVisibleForEnemies = unit.IsVisibleForEnemies()
+		const isVisibleForEnemies = unit.IsVisibleForEnemies() // TODO: add support methods
 		const shouldBeHighlighted = this.IsUnitShouldBeHighlighted(unit)
 		const isVisibleValid = isVisibleForEnemies && shouldBeHighlighted
 
@@ -140,8 +164,8 @@ const bootstrap = new (class CVisibleByEnemy {
 			return
 		}
 
-		const isDisabledUnit = this.IsDisableParticleState(unit)
-		if (!isVisibleValid || effectType.SelectedID === 0 || isDisabledUnit) {
+		const isDisableParticleUnit = this.IsDisableParticleUnit(unit)
+		if (!isVisibleValid || effectType.SelectedID === 0 || isDisableParticleUnit) {
 			this.pSDK.DestroyByKey(this.KeyName(unit))
 			return
 		}
@@ -174,6 +198,10 @@ const bootstrap = new (class CVisibleByEnemy {
 			unit.CustomGlowColor = isValidBear ? glowColor : undefined
 			return
 		}
+		if (unit instanceof Courier) {
+			unit.CustomGlowColor = menu.Courier.GlowState.value ? glowColor : undefined
+			return
+		}
 		if (unit.IsSpiritBear) {
 			unit.CustomGlowColor = menu.Bear.GlowState.value ? glowColor : undefined
 			return
@@ -194,45 +222,49 @@ const bootstrap = new (class CVisibleByEnemy {
 			unit.CustomGlowColor = menu.Creep.GlowState.value ? glowColor : undefined
 			return
 		}
+		if (unit instanceof WardObserver || unit instanceof WardTrueSight) {
+			unit.CustomGlowColor = menu.Ward.GlowState.value ? glowColor : undefined
+			return
+		}
 		if (unit instanceof TechiesMines) {
 			unit.CustomGlowColor = menu.Mine.GlowState.value ? glowColor : undefined
 			return
 		}
-		if (unit instanceof ZeusCloud) {
+		if (unit instanceof npc_dota_zeus_cloud) {
 			unit.CustomGlowColor = menu.Cloud.GlowState.value ? glowColor : undefined
 			return
 		}
-		if (unit instanceof UndyingTombstone) {
+		if (unit instanceof npc_dota_unit_undying_tombstone) {
 			unit.CustomGlowColor = menu.Tombstone.GlowState.value ? glowColor : undefined
 			return
 		}
-		if (unit instanceof VenomancerPlagueWard) {
+		if (unit instanceof npc_dota_venomancer_plagueward) {
 			unit.CustomGlowColor = menu.PlagueWard.GlowState.value ? glowColor : undefined
 			return
 		}
-		if (unit instanceof LichIceSpire) {
+		if (unit instanceof npc_dota_lich_ice_spire) {
 			unit.CustomGlowColor = menu.IceSpire.GlowState.value ? glowColor : undefined
 			return
 		}
-		if (unit instanceof ElderTitanAncestralSpirit) {
+		if (unit instanceof npc_dota_elder_titan_ancestral_spirit) {
 			unit.CustomGlowColor = menu.AncestralSpirit.GlowState.value
 				? glowColor
 				: undefined
 			return
 		}
-		if (unit instanceof ShamanSerpentWard) {
+		if (unit instanceof npc_dota_shadowshaman_serpentward) {
 			unit.CustomGlowColor = menu.SerpentWard.GlowState.value
 				? glowColor
 				: undefined
 			return
 		}
-		if (unit instanceof ClinkzSkeletonArmy) {
+		if (unit instanceof npc_dota_clinkz_skeleton_archer) {
 			unit.CustomGlowColor = menu.SkeletonArmy.GlowState.value
 				? glowColor
 				: undefined
 			return
 		}
-		if (unit instanceof IngisFatuus) {
+		if (unit instanceof npc_dota_ignis_fatuus) {
 			unit.CustomGlowColor = menu.IngisFatuus.GlowState.value
 				? glowColor
 				: undefined
@@ -290,15 +322,17 @@ const bootstrap = new (class CVisibleByEnemy {
 		if (unit.IsHero && !menu.State.value) {
 			return false
 		}
+		if (menu.OnlySelf.value) {
+			return unit.IsMyHero
+		}
 		if (unit.IsClone) {
 			return menu.Clone.value
 		}
 		if (unit.IsIllusion) {
 			return menu.Illusion.value
 		}
-		return unit.IsHero
+		return true
 	}
-
 	protected IsBuilding(unit: Unit) {
 		const menu = this.menu.Building
 		if (!menu.State.value && unit.IsBuilding) {
@@ -340,10 +374,10 @@ const bootstrap = new (class CVisibleByEnemy {
 
 	protected IsOtherUnit(unit: Unit) {
 		const menu = this.menu
-		if (unit.IsHero || unit.IsCreep || unit.IsBuilding) {
+		if (!menu.AllAnyUnitsState.value || unit instanceof Courier) {
 			return false
 		}
-		if (!menu.AllAnyUnitsState.value) {
+		if (unit.IsHero || unit.IsCreep || unit.IsBuilding) {
 			return false
 		}
 		if (unit instanceof Thinker) {
@@ -355,46 +389,52 @@ const bootstrap = new (class CVisibleByEnemy {
 		if (unit.IsRoshan) {
 			return menu.Roshan.State.value
 		}
+		if (unit instanceof Miniboss) {
+			return menu.Tormenter.value
+		}
 		if (unit instanceof TechiesMines) {
 			return menu.Mine.State.value
 		}
-		if (unit instanceof ZeusCloud) {
+		if (unit instanceof npc_dota_techies_minefield_sign) {
+			return menu.MinefieldSign.State.value
+		}
+		if (unit instanceof npc_dota_zeus_cloud) {
 			return menu.Cloud.State.value
 		}
-		if (unit instanceof WispSpirit) {
+		if (unit instanceof npc_dota_wisp_spirit) {
 			return menu.WispSpirit.value
 		}
-		if (unit instanceof ShamanSerpentWard) {
+		if (unit instanceof npc_dota_shadowshaman_serpentward) {
 			return menu.SerpentWard.State.value
 		}
-		if (unit instanceof LichIceSpire) {
+		if (unit instanceof npc_dota_lich_ice_spire) {
 			return menu.IceSpire.State.value
 		}
-		if (unit instanceof ClinkzSkeletonArmy) {
+		if (unit instanceof npc_dota_clinkz_skeleton_archer) {
 			return menu.SkeletonArmy.State.value
 		}
-		if (unit instanceof IngisFatuus) {
+		if (unit instanceof npc_dota_ignis_fatuus) {
 			return menu.IngisFatuus.State.value
 		}
-		if (unit instanceof UndyingTombstone) {
+		if (unit instanceof npc_dota_unit_undying_tombstone) {
 			return menu.Tombstone.State.value
 		}
-		if (unit instanceof VenomancerPlagueWard) {
+		if (unit instanceof npc_dota_venomancer_plagueward) {
 			return menu.PlagueWard.State.value
 		}
-		if (unit instanceof EyesInTheForest) {
+		if (unit instanceof npc_dota_treant_eyes) {
 			return menu.EyesInTheForest.value
 		}
-		if (unit instanceof TemplarPsionicTrap) {
+		if (unit instanceof npc_dota_templar_assassin_psionic_trap) {
 			return menu.PsionicTrap.value
 		}
-		if (unit instanceof ElderTitanAncestralSpirit) {
+		if (unit instanceof npc_dota_elder_titan_ancestral_spirit) {
 			return menu.AncestralSpirit.State.value
 		}
 		return menu.HiddenUnitsState.value
 	}
 
-	protected IsDisableParticleState(unit: Unit) {
+	protected IsDisableParticleUnit(unit: Unit) {
 		const menu = this.menu
 		return (
 			(unit.IsHero && !menu.Hero.ParticleState.value) ||
@@ -403,18 +443,25 @@ const bootstrap = new (class CVisibleByEnemy {
 			(unit.IsSpiritBear && !menu.Bear.ParticleState.value) ||
 			(unit.IsBuilding && !menu.Building.ParticleState.value) ||
 			(unit instanceof TechiesMines && !menu.Mine.ParticleState.value) ||
-			(unit instanceof ZeusCloud && !menu.Cloud.ParticleState.value) ||
-			(unit instanceof LichIceSpire && !menu.IceSpire.ParticleState.value) ||
-			(unit instanceof IngisFatuus && !menu.IngisFatuus.ParticleState.value) ||
-			(unit instanceof UndyingTombstone && !menu.Tombstone.ParticleState.value) ||
-			(unit instanceof ClinkzSkeletonArmy &&
+			(unit instanceof npc_dota_zeus_cloud && !menu.Cloud.ParticleState.value) ||
+			(unit instanceof npc_dota_lich_ice_spire &&
+				!menu.IceSpire.ParticleState.value) ||
+			(unit instanceof npc_dota_ignis_fatuus &&
+				!menu.IngisFatuus.ParticleState.value) ||
+			(unit instanceof npc_dota_unit_undying_tombstone &&
+				!menu.Tombstone.ParticleState.value) ||
+			(unit instanceof npc_dota_techies_minefield_sign &&
+				!menu.MinefieldSign.ParticleState.value) ||
+			(unit instanceof npc_dota_clinkz_skeleton_archer &&
 				!menu.SkeletonArmy.ParticleState.value) ||
-			(unit instanceof ShamanSerpentWard &&
+			(unit instanceof npc_dota_shadowshaman_serpentward &&
 				!menu.SerpentWard.ParticleState.value) ||
-			(unit instanceof VenomancerPlagueWard &&
+			(unit instanceof npc_dota_venomancer_plagueward &&
 				!menu.PlagueWard.ParticleState.value) ||
-			(unit instanceof ElderTitanAncestralSpirit &&
-				!menu.PlagueWard.ParticleState.value)
+			(unit instanceof npc_dota_elder_titan_ancestral_spirit &&
+				!menu.PlagueWard.ParticleState.value) ||
+			((unit instanceof WardObserver || unit instanceof WardTrueSight) &&
+				!menu.Ward.ParticleState.value)
 		)
 	}
 })()
@@ -422,8 +469,6 @@ const bootstrap = new (class CVisibleByEnemy {
 EventsSDK.on("GameEnded", () => bootstrap.GameChanged())
 
 EventsSDK.on("GameStarted", () => bootstrap.GameChanged())
-
-EventsSDK.on("EntityCreated", entity => bootstrap.EntityCreated(entity))
 
 EventsSDK.on("EntityCreated", entity => bootstrap.EntityCreated(entity))
 

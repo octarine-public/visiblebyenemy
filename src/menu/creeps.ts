@@ -58,16 +58,16 @@ class CreepTypes {
 	}
 
 	public ResetSettings(hideUnhide: boolean) {
-		this.Lane.value = true
-		this.Boar.value = true
-		this.Hawk.value = true
-		this.Panda.value = true
-		this.Spider.value = true
-		this.Neutral.value = true
-		this.Zombies.value = false
-		this.Familiar.value = true
-		this.Eidolon.value = true
-		this.ForgedSpirit.value = true
+		this.Lane.value = this.Lane.defaultValue
+		this.Boar.value = this.Boar.defaultValue
+		this.Hawk.value = this.Hawk.defaultValue
+		this.Panda.value = this.Panda.defaultValue
+		this.Spider.value = this.Spider.defaultValue
+		this.Neutral.value = this.Neutral.defaultValue
+		this.Zombies.value = this.Zombies.defaultValue
+		this.Familiar.value = this.Familiar.defaultValue
+		this.Eidolon.value = this.Eidolon.defaultValue
+		this.ForgedSpirit.value = this.ForgedSpirit.defaultValue
 		this.HideUnhide(hideUnhide)
 	}
 
@@ -118,10 +118,10 @@ export class MenuCreep {
 	}
 
 	public ResetSettings() {
-		this.State.value = true
-		this.AllState.value = false
-		this.GlowState.value = true
-		this.ParticleState.value = false
+		this.State.value = this.State.defaultValue
+		this.AllState.value = this.AllState.defaultValue
+		this.GlowState.value = this.GlowState.defaultValue
+		this.ParticleState.value = this.ParticleState.defaultValue
 		this.Types.ResetSettings(this.AllState.value)
 		this.tree.Update()
 	}

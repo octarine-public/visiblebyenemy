@@ -12,6 +12,7 @@ import { MenuBear } from "./any/bears"
 import { MenuCloud } from "./any/cloud"
 import { MenuIceSpire } from "./any/iceSpire"
 import { MenuIngisFatuus } from "./any/ingisFatuus"
+import { MenuMinefieldSign } from "./any/minefieldSign"
 import { MenuMine } from "./any/mines"
 import { MenuPlagueWard } from "./any/plagueWards"
 import { MenuSerpentWard } from "./any/serpentWard"
@@ -46,6 +47,7 @@ export class MenuManager {
 	public readonly SerpentWard: MenuSerpentWard
 	public readonly SkeletonArmy: MenuSkeletonArmy
 	public readonly AncestralSpirit: MenuAncestralSpirit
+	public readonly MinefieldSign: MenuMinefieldSign
 
 	public readonly IceSpire: MenuIceSpire
 	public readonly Tombstone: MenuTombstone
@@ -55,13 +57,14 @@ export class MenuManager {
 	public readonly PlagueWard: MenuPlagueWard
 	public readonly EyesInTheForest: Menu.Toggle
 	public readonly PsionicTrap: Menu.Toggle
+	public readonly Tormenter: Menu.Toggle
 
 	public readonly GlowState: Menu.Toggle
 	public readonly GlowColor: Menu.ColorPicker
 
 	private readonly reset: Menu.Button
 	private readonly sleeper = new Sleeper()
-	private readonly defaultColor = Color.Fuchsia
+	private readonly defaultColor = Color.Aqua
 	private readonly anyUnitsTree: Menu.Node
 
 	private readonly particles = [
@@ -216,7 +219,14 @@ export class MenuManager {
 			-1,
 			ImageData.Paths.Icons.icon_svg_other
 		)
-
+		this.Tormenter = this.anyUnitsTree.AddToggle(
+			"Tormenter",
+			true,
+			undefined,
+			-1,
+			ImageData.GetSpellTexture("miniboss_reflect"),
+			0
+		)
 		this.WispSpirit = this.anyUnitsTree.AddToggle(
 			"Wisp spirits",
 			false,
@@ -253,6 +263,7 @@ export class MenuManager {
 		this.IngisFatuus = new MenuIngisFatuus(this.anyUnitsTree)
 		this.SkeletonArmy = new MenuSkeletonArmy(this.anyUnitsTree)
 		this.SerpentWard = new MenuSerpentWard(this.anyUnitsTree)
+		this.MinefieldSign = new MenuMinefieldSign(this.anyUnitsTree)
 		this.AncestralSpirit = new MenuAncestralSpirit(this.anyUnitsTree)
 
 		this.reset = menu.AddButton("Reset", "Reset settings")
@@ -270,6 +281,7 @@ export class MenuManager {
 		this.State.OnValue(() => callback())
 		this.Color.OnValue(() => callback())
 		this.Thinker.OnValue(() => callback())
+		this.Tormenter.OnValue(() => callback())
 		this.GlowState.OnValue(() => callback())
 		this.GlowColor.OnValue(() => callback())
 		this.WispSpirit.OnValue(() => callback())
@@ -294,6 +306,7 @@ export class MenuManager {
 		this.SkeletonArmy.OnChanged(() => callback())
 		this.SerpentWard.OnChanged(() => callback())
 		this.AncestralSpirit.OnChanged(() => callback())
+		this.MinefieldSign.OnChanged(() => callback())
 
 		this.EffectType.OnValue(() => {
 			callback()
@@ -316,18 +329,19 @@ export class MenuManager {
 	}
 
 	public ResetSettings() {
-		this.State.value = true
-		this.Thinker.value = true
-		this.GlowState.value = true
-		this.WispSpirit.value = false
-		this.HiddenUnitsState.value = false
-		this.EffectType.SelectedID = 1
-		this.PsionicTrap.value = true
-		this.EyesInTheForest.value = true
-		this.AllAnyUnitsState.value = true
+		this.State.value = this.State.defaultValue
+		this.Thinker.value = this.Thinker.defaultValue
+		this.GlowState.value = this.GlowState.defaultValue
+		this.WispSpirit.value = this.WispSpirit.defaultValue
+		this.Tormenter.value = this.Tormenter.defaultValue
+		this.HiddenUnitsState.value = this.HiddenUnitsState.defaultValue
+		this.EffectType.SelectedID = this.EffectType.defaultValue
+		this.PsionicTrap.value = this.PsionicTrap.defaultValue
+		this.EyesInTheForest.value = this.EyesInTheForest.defaultValue
+		this.AllAnyUnitsState.value = this.AllAnyUnitsState.defaultValue
+		this.Color.SelectedColor.CopyFrom(this.Color.defaultColor)
+		this.GlowColor.SelectedColor.CopyFrom(this.GlowColor.defaultColor)
 		this.ResetSettingsUnits()
-		this.Color.SelectedColor.CopyFrom(this.defaultColor)
-		this.GlowColor.SelectedColor.CopyFrom(this.defaultColor)
 	}
 
 	protected ResetSettingsUnits() {
@@ -343,9 +357,10 @@ export class MenuManager {
 		this.IceSpire.ResetSettings()
 		this.Tombstone.ResetSettings()
 		this.PlagueWard.ResetSettings()
+		this.SerpentWard.ResetSettings()
 		this.IngisFatuus.ResetSettings()
 		this.SkeletonArmy.ResetSettings()
-		this.SerpentWard.ResetSettings()
+		this.MinefieldSign.ResetSettings()
 		this.AncestralSpirit.ResetSettings()
 	}
 }

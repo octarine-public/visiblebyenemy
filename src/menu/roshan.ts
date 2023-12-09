@@ -20,8 +20,8 @@ export class MenuRoshan {
 	}
 
 	public ResetSettings() {
-		this.State.value = true
-		this.GlowState.value = true
-		this.ParticleState.value = false
+		this.State.value = this.State.defaultValue
+		this.GlowState.value = this.GlowState.defaultValue
+		this.ParticleState.value = this.ParticleState.defaultValue
 	}
 }
