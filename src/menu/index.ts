@@ -15,6 +15,7 @@ import { MenuIngisFatuus } from "./any/ingisFatuus"
 import { MenuMinefieldSign } from "./any/minefieldSign"
 import { MenuMine } from "./any/mines"
 import { MenuPlagueWard } from "./any/plagueWards"
+import { MenuRoshansBanner } from "./any/roshansBanner"
 import { MenuSerpentWard } from "./any/serpentWard"
 import { MenuSkeletonArmy } from "./any/skeletonArmy"
 import { MenuTombstone } from "./any/tombstone"
@@ -51,6 +52,7 @@ export class MenuManager {
 
 	public readonly IceSpire: MenuIceSpire
 	public readonly Tombstone: MenuTombstone
+	public readonly RoshanBanner: MenuRoshansBanner
 
 	public readonly Thinker: Menu.Toggle
 	public readonly WispSpirit: Menu.Toggle
@@ -263,6 +265,7 @@ export class MenuManager {
 		this.IngisFatuus = new MenuIngisFatuus(this.anyUnitsTree)
 		this.SkeletonArmy = new MenuSkeletonArmy(this.anyUnitsTree)
 		this.SerpentWard = new MenuSerpentWard(this.anyUnitsTree)
+		this.RoshanBanner = new MenuRoshansBanner(this.anyUnitsTree)
 		this.MinefieldSign = new MenuMinefieldSign(this.anyUnitsTree)
 		this.AncestralSpirit = new MenuAncestralSpirit(this.anyUnitsTree)
 
@@ -307,6 +310,7 @@ export class MenuManager {
 		this.SerpentWard.OnChanged(() => callback())
 		this.AncestralSpirit.OnChanged(() => callback())
 		this.MinefieldSign.OnChanged(() => callback())
+		this.RoshanBanner.OnChanged(() => callback())
 
 		this.EffectType.OnValue(() => {
 			callback()
@@ -362,5 +366,6 @@ export class MenuManager {
 		this.SkeletonArmy.ResetSettings()
 		this.MinefieldSign.ResetSettings()
 		this.AncestralSpirit.ResetSettings()
+		this.RoshanBanner.ResetSettings()
 	}
 }

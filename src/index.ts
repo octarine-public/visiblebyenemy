@@ -28,6 +28,7 @@ import {
 	npc_dota_techies_minefield_sign,
 	npc_dota_templar_assassin_psionic_trap,
 	npc_dota_treant_eyes,
+	npc_dota_unit_roshans_banner,
 	npc_dota_unit_undying_tombstone,
 	npc_dota_venomancer_plagueward,
 	npc_dota_visage_familiar,
@@ -246,6 +247,12 @@ const bootstrap = new (class CVisibleByEnemy {
 			unit.CustomGlowColor = menu.IceSpire.GlowState.value ? glowColor : undefined
 			return
 		}
+		if (unit instanceof npc_dota_unit_roshans_banner) {
+			unit.CustomGlowColor = menu.RoshanBanner.GlowState.value
+				? glowColor
+				: undefined
+			return
+		}
 		if (unit instanceof npc_dota_elder_titan_ancestral_spirit) {
 			unit.CustomGlowColor = menu.AncestralSpirit.GlowState.value
 				? glowColor
@@ -333,6 +340,7 @@ const bootstrap = new (class CVisibleByEnemy {
 		}
 		return true
 	}
+
 	protected IsBuilding(unit: Unit) {
 		const menu = this.menu.Building
 		if (!menu.State.value && unit.IsBuilding) {
@@ -394,6 +402,9 @@ const bootstrap = new (class CVisibleByEnemy {
 		}
 		if (unit instanceof TechiesMines) {
 			return menu.Mine.State.value
+		}
+		if (unit instanceof npc_dota_unit_roshans_banner) {
+			return menu.RoshanBanner.State.value
 		}
 		if (unit instanceof npc_dota_techies_minefield_sign) {
 			return menu.MinefieldSign.State.value
@@ -459,9 +470,11 @@ const bootstrap = new (class CVisibleByEnemy {
 			(unit instanceof npc_dota_venomancer_plagueward &&
 				!menu.PlagueWard.ParticleState.value) ||
 			(unit instanceof npc_dota_elder_titan_ancestral_spirit &&
-				!menu.PlagueWard.ParticleState.value) ||
+				!menu.AncestralSpirit.ParticleState.value) ||
 			((unit instanceof WardObserver || unit instanceof WardTrueSight) &&
-				!menu.Ward.ParticleState.value)
+				!menu.Ward.ParticleState.value) ||
+			(unit instanceof npc_dota_unit_roshans_banner &&
+				!menu.RoshanBanner.ParticleState.value)
 		)
 	}
 })()
