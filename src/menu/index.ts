@@ -209,7 +209,7 @@ export class MenuManager {
 		this.AllAnyUnitsState = this.anyUnitsTree.AddToggle("State", true)
 		this.Thinker = this.anyUnitsTree.AddToggle(
 			"Thinker",
-			true,
+			false,
 			"NOTE: Displayed on hidden units, for example:\nVoid Spirit (aether remnant)",
 			-1,
 			ImageData.Paths.Icons.icon_svg_other
