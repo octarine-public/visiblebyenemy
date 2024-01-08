@@ -54,7 +54,6 @@ export class MenuManager {
 	public readonly Tombstone: MenuTombstone
 	public readonly RoshanBanner: MenuRoshansBanner
 
-	public readonly Thinker: Menu.Toggle
 	public readonly WispSpirit: Menu.Toggle
 	public readonly PlagueWard: MenuPlagueWard
 	public readonly EyesInTheForest: Menu.Toggle
@@ -207,13 +206,6 @@ export class MenuManager {
 		)
 		this.anyUnitsTree.SortNodes = false
 		this.AllAnyUnitsState = this.anyUnitsTree.AddToggle("State", true)
-		this.Thinker = this.anyUnitsTree.AddToggle(
-			"Thinker",
-			false,
-			"NOTE: Displayed on hidden units, for example:\nVoid Spirit (aether remnant)",
-			-1,
-			ImageData.Paths.Icons.icon_svg_other
-		)
 		this.HiddenUnitsState = this.anyUnitsTree.AddToggle(
 			"Hidden units",
 			false,
@@ -283,7 +275,6 @@ export class MenuManager {
 	public OnChanged(callback: () => void) {
 		this.State.OnValue(() => callback())
 		this.Color.OnValue(() => callback())
-		this.Thinker.OnValue(() => callback())
 		this.Tormenter.OnValue(() => callback())
 		this.GlowState.OnValue(() => callback())
 		this.GlowColor.OnValue(() => callback())
@@ -334,7 +325,6 @@ export class MenuManager {
 
 	public ResetSettings() {
 		this.State.value = this.State.defaultValue
-		this.Thinker.value = this.Thinker.defaultValue
 		this.GlowState.value = this.GlowState.defaultValue
 		this.WispSpirit.value = this.WispSpirit.defaultValue
 		this.Tormenter.value = this.Tormenter.defaultValue
